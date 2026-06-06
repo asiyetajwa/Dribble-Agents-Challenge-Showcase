@@ -10,7 +10,7 @@ dotenv.config();
 
 // Connect to Neon PostgreSQL using the existing workspace credentials
 const pool = new Pool({
-  connectionString: process.env.NEON_PRIVATE_DATABASE_URL || 'postgresql://neondb_owner:npg_ItYjobSC76HB@ep-sparkling-star-afp7tfws-pooler.c-2.us-west-2.aws.neon.tech/neondb?sslmode=require'
+  connectionString: process.env.NEON_PRIVATE_DATABASE_URL || ''
 });
 
 const server = new Server({
