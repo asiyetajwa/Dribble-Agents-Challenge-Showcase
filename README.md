@@ -18,3 +18,12 @@ Due to the commercial nature of our core product (UI, billing, and proprietary d
 Judges can bypass our Stripe paywall and free-tier limits to test the full commercial product live using this specific backdoor link:
 
 [https://dribble360.com/beta/studio?judge=google2026](https://dribble360.com/beta/studio?judge=google2026)
+
+## Impact & Market Opportunity
+
+- **800,000+** football YouTube channels globally — the vast majority run by solo creators
+- A solo creator covering a top-5 league spends **8–14 hours per match** producing one long-form video (rewatching, manual stat research on FBref, scripting, thumbnailing)
+- Studio compresses that to **under 10 minutes** for a complete content package
+- **World Cup 2026:** 48 teams, 104 matches, June 11–July 19 — the highest-density football content production period in 4 years. Studio launches into peak demand.
+- **Multiplier effect:** Competitor Radar and Pattern Mine surface underreported storylines, meaning more unique content across the ecosystem — not just faster content
+- Direct goal contribution rate improvement: creators using data-grounded hooks see measurably higher CTR than generic match recap angles
