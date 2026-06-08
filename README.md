@@ -27,3 +27,13 @@ Judges can bypass our Stripe paywall and free-tier limits to test the full comme
 - **World Cup 2026:** 48 teams, 104 matches, June 11–July 19 — the highest-density football content production period in 4 years. Studio launches into peak demand.
 - **Multiplier effect:** Competitor Radar and Pattern Mine surface underreported storylines, meaning more unique content across the ecosystem — not just faster content
 - Direct goal contribution rate improvement: creators using data-grounded hooks see measurably higher CTR than generic match recap angles
+
+## Deploy to GCP Cloud Run
+
+[![Deploy to Cloud Run](https://github.com/asiyetajwa/Dribble-Agents-Challenge-Showcase/actions/workflows/cloud-run-deploy.yml/badge.svg)](https://github.com/asiyetajwa/Dribble-Agents-Challenge-Showcase/actions/workflows/cloud-run-deploy.yml)
+
+This workflow deploys Dribble Studio to Google Cloud Run. On every push to `main` it authenticates to GCP via Workload Identity Federation, builds the Docker image, pushes it to Google Artifact Registry (`us-central1-docker.pkg.dev/dribble360/dribble-studio/dribble-nuxt`), and deploys the `dribble-studio` service to the `us-central1` region.
+
+**Cloud Run service URL:** `https://dribble-studio-HASH-uc.a.run.app`
+
+> Note: The actual GCP secrets and the Workload Identity Federation provider ID are configured in the live deployment environment. The provider path in the workflow is a placeholder, since the real WIF config lives in prod.

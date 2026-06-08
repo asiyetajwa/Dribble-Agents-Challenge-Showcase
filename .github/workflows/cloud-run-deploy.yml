@@ -1,0 +1,77 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: dribble360
+  GCP_REGION: us-central1
+  AR_REPOSITORY: us-central1-docker.pkg.dev/dribble360/dribble-studio
+  IMAGE_NAME: dribble-nuxt
+  CLOUD_RUN_SERVICE: dribble-studio
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_provider: projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID
+          service_account: dribble360-bigquery@dribble360.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: docker build -t "${{ env.AR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" .
+
+      - name: Push Docker image
+        run: docker push "${{ env.AR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.CLOUD_RUN_SERVICE }}
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.AR_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          flags: >-
+            --port=3000
+            --min-instances=1
+            --max-instances=10
+            --memory=2Gi
+            --cpu=2
+            --allow-unauthenticated
+          env_vars: |
+            NUXT_DATABASE_URL=${{ secrets.NUXT_DATABASE_URL }}
+            NUXT_GEMINI_API_KEY=${{ secrets.NUXT_GEMINI_API_KEY }}
+            NUXT_YOUTUBE_CLIENT_ID=${{ secrets.NUXT_YOUTUBE_CLIENT_ID }}
+            NUXT_YOUTUBE_CLIENT_SECRET=${{ secrets.NUXT_YOUTUBE_CLIENT_SECRET }}
+            NUXT_STRIPE_SECRET_KEY=${{ secrets.NUXT_STRIPE_SECRET_KEY }}
+            NUXT_BIGQUERY_PROJECT=dribble360
+
+      - name: Output service URL
+        run: |
+          echo "### Cloud Run Deployment :rocket:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Deployed **${{ env.CLOUD_RUN_SERVICE }}** to **${{ env.GCP_REGION }}**" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Service URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
